@@ -9,3 +9,91 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id        String    @id @default(uuid())
+  createdAt DateTime  @default(now())
+  email     String    @unique
+  phone     String?
+  role      Role      @default(TUTOR)
+  tutor     Tutor[]
+  host      Host[]
+  Address   Address[]
+
+  @@map("users")
+}
+
+model Tutor {
+  id        String    @id @default(uuid())
+  name      String
+  user      User      @relation(fields: [userId], references: [id])
+  userId    String
+  address   Address   @relation(fields: [addressId], references: [id])
+  addressId String
+  pets      Pet[]
+  Booking   Booking[]
+
+  @@map("tutors")
+}
+
+model Host {
+  id        String    @id @default(uuid())
+  name      String
+  user      User      @relation(fields: [userId], references: [id])
+  userId    String
+  address   Address   @relation(fields: [addressId], references: [id])
+  addressId String
+  Booking   Booking[]
+
+  @@map("hosts")
+}
+
+model Pet {
+  id      String    @id @default(uuid())
+  name    String
+  tutor   Tutor     @relation(fields: [tutorId], references: [id])
+  tutorId String
+  Booking Booking[]
+
+  @@map("pets")
+}
+
+model Address {
+  id           String  @id @default(uuid())
+  address      String
+  number       Int
+  neighborhood String
+  city         String
+  postal_code  String
+  user         User    @relation(fields: [userId], references: [id])
+  userId       String
+  Tutor        Tutor[]
+  Host         Host[]
+
+  @@map("addresses")
+}
+
+model Booking {
+  id       String   @id @default(uuid())
+  bookedAt DateTime @db.Date()
+  tutor    Tutor    @relation(fields: [tutorId], references: [id])
+  tutorId  String
+  host     Host     @relation(fields: [hostId], references: [id])
+  hostId   String
+  pet      Pet      @relation(fields: [petId], references: [id])
+  petId    String
+  status   Status   @default(SCHEDULED)
+
+  @@map("booking")
+}
+
+enum Role {
+  TUTOR
+  HOST
+}
+
+enum Status {
+  SCHEDULED
+  FINISHED
+  CANCELED
+}
