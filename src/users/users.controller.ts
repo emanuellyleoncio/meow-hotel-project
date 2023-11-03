@@ -2,6 +2,7 @@ import {
 	BadRequestException,
 	Body,
 	Controller,
+	Get,
 	HttpStatus,
 	Post,
 	Res
@@ -25,5 +26,11 @@ export class UsersController {
 		const user = await this.usersService.createUser(data)
 
 		return res.status(HttpStatus.CREATED).json(user)
+	}
+
+	@Get()
+	async getUsers(@Res() res: Response) {
+		const users = await this.usersService.findAllUsers()
+		return res.json(users)
 	}
 }

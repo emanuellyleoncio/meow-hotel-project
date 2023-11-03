@@ -13,4 +13,8 @@ export class UsersService {
 	async createUser(data: CreateUserDto) {
 		return await this.prisma.user.create({ data })
 	}
+
+	async findAllUsers() {
+		return await this.prisma.user.findMany()
+	}
 }
