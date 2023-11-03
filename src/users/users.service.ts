@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from 'src/database/prisma.service'
 import CreateUserDto from './dto/create-users'
+import UpdateUserDto from './dto/update-users'
 
 @Injectable()
 export class UsersService {
@@ -16,5 +17,18 @@ export class UsersService {
 
 	async findAllUsers() {
 		return await this.prisma.user.findMany()
+	}
+
+	async findUser(id: string) {
+		return await this.prisma.user.findFirst({ where: { id } })
+	}
+
+	async updateUser(id: string, data: UpdateUserDto) {
+		await this.prisma.user.update({
+			where: {
+				id
+			},
+			data
+		})
 	}
 }

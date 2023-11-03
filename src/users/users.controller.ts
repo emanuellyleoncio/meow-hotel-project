@@ -4,7 +4,10 @@ import {
 	Controller,
 	Get,
 	HttpStatus,
+	NotFoundException,
+	Param,
 	Post,
+	Put,
 	Res
 } from '@nestjs/common'
 import { UsersService } from './users.service'
@@ -32,5 +35,33 @@ export class UsersController {
 	async getUsers(@Res() res: Response) {
 		const users = await this.usersService.findAllUsers()
 		return res.json(users)
+	}
+
+	@Get(':id')
+	async getUser(@Param('id') id: string, @Res() res: Response) {
+		const user = await this.usersService.findUser(id)
+
+		if (!user) {
+			throw new NotFoundException('User does not exist!')
+		}
+
+		return res.json(user)
+	}
+
+	@Put(':id')
+	async updateUser(
+		@Param('id') id: string,
+		@Body() data: CreateUserDto,
+		@Res() res: Response
+	) {
+		const findUser = await this.usersService.findUser(id)
+
+		if (!findUser) {
+			throw new NotFoundException('User does not exist!')
+		}
+
+		await this.usersService.updateUser(id, { ...findUser, ...data })
+
+		return res.status(HttpStatus.NO_CONTENT).send()
 	}
 }
